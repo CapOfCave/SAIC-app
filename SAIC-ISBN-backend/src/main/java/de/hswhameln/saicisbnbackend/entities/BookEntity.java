@@ -15,16 +15,16 @@ public class BookEntity {
     @Column
     private String verlag;
     @Column
-    private String isbn10;
+    private String isbn13;
 
     public BookEntity() {
     }
 
-    public BookEntity(String titel, String autor, String verlag, String isbn10){
+    public BookEntity(String titel, String autor, String verlag, String isbn13){
         this.titel=titel;
         this.autor=autor;
         this.verlag=verlag;
-        this.isbn10=isbn10;
+        this.isbn13=isbn13;
     }
 
 
@@ -44,8 +44,8 @@ public class BookEntity {
         return verlag;
     }
 
-    public String getIsbn10() {
-        return isbn10;
+    public String getIsbn13() {
+        return isbn13;
     }
 
     public void setId(long id) {
@@ -64,7 +64,7 @@ public class BookEntity {
         this.verlag = verlag;
     }
 
-    public void setIsbn10(String isbn10) {
-        this.isbn10 = isbn10;
+    public void setIsbn13(String isbn13) {
+        this.isbn13 = isbn13;
     }
 }

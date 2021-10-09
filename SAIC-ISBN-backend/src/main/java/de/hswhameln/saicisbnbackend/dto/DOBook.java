@@ -57,7 +57,7 @@ public class DOBook {
         this.verlag = verlag;
     }
 
-    public void setIsbn10(String isbn13) {
+    public void setIsbn13(String isbn13) {
         this.isbn13 = isbn13;
     }
 }
