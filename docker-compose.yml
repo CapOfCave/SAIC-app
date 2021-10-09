@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+    isbn-validation:
+        image: "isbn-valiation"
+        build: "SAIC-ISBN-validation"
+        restart: unless-stopped
+        ports:
+        - "8081:8081"
+    isbn-backend:
+        image: "isbn-backend"
+        build: "SAIC-ISBN-backend"
+        restart: unless-stopped
+        ports:
+        - "8080:8080"
+        depends_on:
+        - isbn-validation
