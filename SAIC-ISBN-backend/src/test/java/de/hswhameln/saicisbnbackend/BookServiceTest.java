@@ -4,30 +4,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+
 import java.util.Optional;
 
-import javax.activation.DataSource;
-
-import org.hsqldb.jdbcDriver;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+
 
 import de.hswhameln.saicisbnbackend.dto.DOBook;
 import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
 import de.hswhameln.saicisbnbackend.services.BookService;
 import javassist.tools.web.BadHttpRequest;
-import okhttp3.mockwebserver.MockWebServer;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
@@ -56,7 +48,7 @@ public class BookServiceTest {
 	}
 
     @Test
-	void testReadBook() throws BadHttpRequest {
+	void testReadBook() throws Exception {
         when(repo.findByIsbn13(book.getIsbn13())).thenReturn(Optional.of(entity));
         service.readBook(book.getIsbn13());
         Mockito.verify(repo, times(1)).findByIsbn13(book.getIsbn13());
