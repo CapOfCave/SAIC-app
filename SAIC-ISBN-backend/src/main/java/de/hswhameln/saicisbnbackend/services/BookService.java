@@ -38,7 +38,7 @@ public class BookService {
         if (entity.isPresent()) {
             BookEntity existingEntity = entity.orElseThrow();
             return new DOBook(existingEntity.getTitel(), existingEntity.getAutor(), existingEntity.getVerlag(),
-                    existingEntity.getIsbn10());
+                    existingEntity.getIsbn13());
 
         }
         return new DOBook();
