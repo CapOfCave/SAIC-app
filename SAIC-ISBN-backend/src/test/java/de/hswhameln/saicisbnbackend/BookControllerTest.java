@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,11 +63,41 @@ public class BookControllerTest {
 
     
     @Test
-    void testSaveBook() throws BadHttpRequest {       
+    void testSaveBookSuccess() throws BadHttpRequest {       
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(service.saveBook(testbook)).thenReturn("success");
+
         controller.saveBook(testbook);
         Mockito.verify(validationService, times(1)).validate(any(String.class));
-        Mockito.verify(service, times(1)).saveBook(any(DOBook.class));
+        Mockito.verify(service, times(1)).saveBook(testbook);
+    }
+
+    @Test
+    void testSaveBookFailure() throws BadHttpRequest {       
+        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(service.saveBook(testbook)).thenReturn("failure");
+
+        try{
+            controller.saveBook(testbook);
+            } catch (Exception e){
+                Assert.assertTrue(true);
+            }
+        Mockito.verify(validationService, times(1)).validate(any(String.class));
+        Mockito.verify(service, times(1)).saveBook(testbook);
+    }
+
+    @Test
+    void testSaveBookExists() throws BadHttpRequest {    
+        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(service.saveBook(testbook)).thenReturn("exists");
+
+        try{
+        controller.saveBook(testbook);
+        } catch (Exception e){
+            Assert.assertTrue(true);
+        }
+        Mockito.verify(validationService, times(1)).validate(any(String.class));
+        Mockito.verify(service, times(1)).saveBook(testbook);
 
     }
 
