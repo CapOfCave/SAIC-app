@@ -1,6 +1,5 @@
 package de.hswhameln.saicisbnbackend.dto;
 
-import javax.persistence.*;
 
 
 public class DOBook {

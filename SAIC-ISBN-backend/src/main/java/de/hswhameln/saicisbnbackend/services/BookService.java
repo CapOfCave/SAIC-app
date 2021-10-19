@@ -32,7 +32,7 @@ public class BookService {
         }
     }
 
-    public DOBook readBook(String isbn) {
+    public DOBook readBook(String isbn) throws Exception {
         Optional<BookEntity> entity = repository.findByIsbn13(isbn);
 
         if (entity.isPresent()) {
@@ -41,6 +41,6 @@ public class BookService {
                     existingEntity.getIsbn13());
 
         }
-        return new DOBook();
+        throw new Exception("Could not find book, please check isbn13");
     }
 }
