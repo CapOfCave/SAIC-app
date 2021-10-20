@@ -21,13 +21,10 @@ public class BookController {
 
     private BookService service;
 
-    private ValidationService validationService;
 
     @Autowired
-    public BookController(BookService service, ValidationService validationService) {
+    public BookController(BookService service) {
         this.service = service;
-        this.validationService = validationService;
-
     }
     /**
      * Speichert das parameterübergebene Buch 
@@ -35,10 +32,6 @@ public class BookController {
      */
     @PostMapping(path = "/saveBook")
     public ResponseEntity<String> saveBook(@RequestBody DOBook book) {
-        ValidationService.ValidationResponse entity = validationService.validate(book.getIsbn13());
-        if (!entity.isSuccessful()) {
-            return ResponseEntity.badRequest().body("ISBN-13 is invalid: " + entity.getMessage());
-        }
         try {
             service.saveBook(book);
         } catch (Exception e) {

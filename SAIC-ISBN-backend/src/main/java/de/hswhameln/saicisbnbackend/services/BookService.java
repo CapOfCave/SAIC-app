@@ -5,6 +5,7 @@ import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
 import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,10 +16,12 @@ import java.util.Optional;
 @Service
 public class BookService {
     private BookRepository repository;
+    private ValidationService validationService;
 
     @Autowired
-    public BookService(BookRepository repository) {
+    public BookService(BookRepository repository, ValidationService validationService) {
         this.repository = repository;
+        this.validationService = validationService;
     }
 
     /**
@@ -27,8 +30,11 @@ public class BookService {
      * @param book
      * @return
      */
-    public void saveBook(DOBook book) throws Exception {
-
+    public void saveBook(DOBook book) {
+        ValidationService.ValidationResponse entity = validationService.validate(book.getIsbn13());
+        if (!entity.isSuccessful()) {
+            throw new IllegalArgumentException("Invalid ISBN: " + entity.getMessage());
+        }
         if (repository.existsById(book.getId())) {
             throw new IllegalStateException("ISBN already exists");
         }

@@ -28,36 +28,29 @@ public class BookControllerTest {
     @Mock
     public BookService service;
 
-    @Mock
-    private ValidationService validationService;
-
     @BeforeEach
     void initialize() {
         testbook = new DOBook("Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", "3551551677");
-        controller = new BookController(service, validationService);
+        controller = new BookController(service);
     }
 
 
     @Test
     void testSaveBookSuccess() throws Exception {
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
         doNothing().when(service).saveBook(testbook);
 
         controller.saveBook(testbook);
-        Mockito.verify(validationService, times(1)).validate(any(String.class));
         Mockito.verify(service, times(1)).saveBook(testbook);
     }
 
     @Test
     void testSaveBookFailure() throws Exception {
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
         doThrow(new IllegalStateException("message")).when(service).saveBook(testbook);
 
         ResponseEntity<String> response = controller.saveBook(testbook);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("message", response.getBody());
 
-        Mockito.verify(validationService, times(1)).validate(any(String.class));
         Mockito.verify(service, times(1)).saveBook(testbook);
     }
 
