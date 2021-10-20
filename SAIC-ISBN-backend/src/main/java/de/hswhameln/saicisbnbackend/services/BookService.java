@@ -1,12 +1,12 @@
 package de.hswhameln.saicisbnbackend.services;
 
-import de.hswhameln.saicisbnbackend.dto.BookCreationDTO;
-import de.hswhameln.saicisbnbackend.dto.BookResponseDTO;
 import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -51,5 +51,11 @@ public class BookService {
 
         }
         throw new Exception("Could not find book, please check isbn13");
+    }
+
+    public List<BookEntity> getBooks() {
+        List<BookEntity> bookEntities = new ArrayList<>();
+        repository.findAll().forEach(bookEntities::add);
+        return bookEntities;
     }
 }

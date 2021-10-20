@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/book")
@@ -54,8 +57,22 @@ public class BookController {
     public ResponseEntity<BookResponseDTO> readBook(@RequestParam String isbn) {
         try {
             BookEntity book = service.readBook(isbn);
-            return ResponseEntity.ok(new BookResponseDTO(book.getId(), book.getTitel(), book.getAutor(), book.getVerlag(),
-                    book.getIsbn13()));
+            return ResponseEntity.ok(mapToBookResponse(book));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private BookResponseDTO mapToBookResponse(BookEntity book) {
+        return new BookResponseDTO(book.getId(), book.getTitel(), book.getAutor(), book.getVerlag(),
+                book.getIsbn13());
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<List<BookResponseDTO>> getBooks() {
+        try {
+            List<BookEntity> books = service.getBooks();
+            return ResponseEntity.ok(books.stream().map(this::mapToBookResponse).collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
