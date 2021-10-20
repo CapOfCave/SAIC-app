@@ -1,5 +1,6 @@
 package de.hswhameln.saicisbnbackend;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -16,7 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import de.hswhameln.saicisbnbackend.dto.DOBook;
+import de.hswhameln.saicisbnbackend.dto.BookResponseDTO;
 import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
 import de.hswhameln.saicisbnbackend.services.BookService;
@@ -26,8 +27,8 @@ import javassist.tools.web.BadHttpRequest;
 public class BookServiceTest {
 
     private final String isbn = "3551551677";
-    private final DOBook book = new DOBook("Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", isbn);
-    private final BookEntity entity= new BookEntity(book.getTitel(),book.getAutor(),book.getVerlag(),book.getIsbn13());
+    private final BookResponseDTO book = new BookResponseDTO(4711L,"Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", isbn);
+    private final BookEntity entity = new BookEntity(book.getTitel(),book.getAutor(),book.getVerlag(),book.getIsbn13());
 
     @Mock
     private BookRepository repo;
@@ -52,11 +53,11 @@ public class BookServiceTest {
 	@Test
 	void testSaveBook() throws Exception {
         when(repo.save(any(BookEntity.class))).thenReturn(entity);
-        when(repo.existsById(book.getId())).thenReturn(false);
+        when(repo.existsByIsbn13(book.getIsbn13())).thenReturn(false);
         when(validationService.validate(isbn)).thenReturn(new ValidationService.ValidationResponse(true, "message"));
-        service.saveBook(book);
+        service.saveBook(entity);
         Mockito.verify(repo, times(1)).save(any(BookEntity.class));
-        Mockito.verify(repo, times(1)).existsById(any(Long.class));             
+        Mockito.verify(repo, times(1)).existsByIsbn13(anyString());
 	}
 
     /**

@@ -1,11 +1,10 @@
 package de.hswhameln.saicisbnbackend.services;
 
-import de.hswhameln.saicisbnbackend.dto.DOBook;
+import de.hswhameln.saicisbnbackend.dto.BookCreationDTO;
+import de.hswhameln.saicisbnbackend.dto.BookResponseDTO;
 import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
-import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,38 +26,30 @@ public class BookService {
     /**
      * speichert Bücher mithilfe des Repositorys
      *
-     * @param book
      * @return
      */
-    public void saveBook(DOBook book) {
-        ValidationService.ValidationResponse entity = validationService.validate(book.getIsbn13());
+    public void saveBook(BookEntity bookEntity) {
+        ValidationService.ValidationResponse entity = validationService.validate(bookEntity.getIsbn13());
         if (!entity.isSuccessful()) {
             throw new IllegalArgumentException("Invalid ISBN: " + entity.getMessage());
         }
-        if (repository.existsByIsbn13(book.getIsbn13())) {
+        if (repository.existsByIsbn13(bookEntity.getIsbn13())) {
             throw new IllegalStateException("ISBN already exists");
         }
-        repository.save(
-                new BookEntity(
-                        book.getTitel(),
-                        book.getAutor(),
-                        book.getVerlag(),
-                        book.getIsbn13().strip().replaceAll("-", "")));
+        repository.save(bookEntity);
 
     }
 
     /**
      * ließt Bücher mithilfe des Repositorys
      */
-    public DOBook readBook(String isbn) throws BadHttpRequest {
+    public BookEntity readBook(String isbn) throws Exception {
         Optional<BookEntity> entity = repository.findByIsbn13(isbn);
 
         if (entity.isPresent()) {
-            BookEntity existingEntity = entity.orElseThrow();
-            return new DOBook(existingEntity.getTitel(), existingEntity.getAutor(), existingEntity.getVerlag(),
-                    existingEntity.getIsbn13());
+            return entity.get();
 
         }
-        throw new BadHttpRequest(new Exception("Could not find book, please check isbn13"));
+        throw new Exception("Could not find book, please check isbn13");
     }
 }

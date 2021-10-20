@@ -1,18 +1,17 @@
 package de.hswhameln.saicisbnbackend.controller;
 
-import de.hswhameln.saicisbnbackend.dto.DOBook;
+import de.hswhameln.saicisbnbackend.dto.BookCreationDTO;
+import de.hswhameln.saicisbnbackend.dto.BookResponseDTO;
+import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.services.BookService;
-import de.hswhameln.saicisbnbackend.services.ValidationService;
-import javassist.tools.web.BadHttpRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 
 
 @RestController
@@ -26,31 +25,38 @@ public class BookController {
     public BookController(BookService service) {
         this.service = service;
     }
+
     /**
-     * Speichert das parameterübergebene Buch 
-     * @param book
+     * Speichert das parameterübergebene Buch
      */
     @PostMapping(path = "/saveBook")
-    public ResponseEntity<String> saveBook(@RequestBody DOBook book) {
+    public ResponseEntity<String> saveBook(@RequestBody BookCreationDTO bookCreationDto) {
         try {
-            service.saveBook(book);
+            service.saveBook(new BookEntity(
+                    bookCreationDto.getTitel(),
+                    bookCreationDto.getAutor(),
+                    bookCreationDto.getVerlag(),
+                    bookCreationDto.getIsbn13().strip().replaceAll("-", "")));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok("Book saved successfully");
     }
+
     /**
      * Lädt das Buch auf Grundlage der parameterübergebenen isbn
+     *
      * @param isbn
      * @return DOBook
      * @throws Exception
      */
-    @PostMapping(path = "/readBook")
-    public ResponseEntity<DOBook> readBook(@RequestBody String isbn)  {
+    @GetMapping(path = "/readBook")
+    public ResponseEntity<BookResponseDTO> readBook(@RequestParam String isbn) {
         try {
-            return ResponseEntity.ok(service.readBook(isbn));
-        } catch (BadHttpRequest e) {
-            System.out.println(e.getMessage());
+            BookEntity book = service.readBook(isbn);
+            return ResponseEntity.ok(new BookResponseDTO(book.getId(), book.getTitel(), book.getAutor(), book.getVerlag(),
+                    book.getIsbn13()));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
