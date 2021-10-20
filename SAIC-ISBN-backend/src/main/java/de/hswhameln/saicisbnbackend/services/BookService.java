@@ -35,7 +35,7 @@ public class BookService {
         if (!entity.isSuccessful()) {
             throw new IllegalArgumentException("Invalid ISBN: " + entity.getMessage());
         }
-        if (repository.existsById(book.getId())) {
+        if (repository.existsByIsbn13(book.getIsbn13())) {
             throw new IllegalStateException("ISBN already exists");
         }
         repository.save(
