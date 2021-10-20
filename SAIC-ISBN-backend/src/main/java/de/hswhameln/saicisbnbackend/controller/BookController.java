@@ -29,9 +29,14 @@ public class BookController {
         this.validationService = validationService;
 
     }
-    
+    /**
+     * Speichert das parameterübergebene Buch 
+     * @param book
+     * @throws BadHttpRequest
+     */
     @PostMapping(path = "/saveBook")
-    public void saveBook(@RequestBody DOBook book) throws BadHttpRequest {
+    public void saveBook(@RequestBody DOBook book) {
+        try{
         ResponseEntity<String> entity = validationService.validate(book.getIsbn13());
         boolean isValid = entity !=null && entity.getStatusCode().equals(HttpStatus.OK);
         if (!isValid) {
@@ -45,9 +50,23 @@ public class BookController {
             throw new BadHttpRequest(new Exception("An error occured while saving"));
         }
     }
-
+    catch (BadHttpRequest e){
+        System.out.println(e.getMessage());
+    }
+    }
+    /**
+     * Lädt das Buch auf Grundlage der parameterübergebenen isbn
+     * @param isbn
+     * @return DOBook
+     * @throws Exception
+     */
     @PostMapping(path = "/readBook")
-    public DOBook readBook(@RequestBody String isbn) throws Exception  {
-        return service.readBook(isbn);
+    public DOBook readBook(@RequestBody String isbn)  {
+        try {
+            return service.readBook(isbn);
+        } catch (BadHttpRequest e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

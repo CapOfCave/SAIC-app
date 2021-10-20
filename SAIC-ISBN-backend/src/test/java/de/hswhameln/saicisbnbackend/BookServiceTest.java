@@ -33,11 +33,18 @@ public class BookServiceTest {
 
     private BookService service;
 
+    /**
+     * inizialisiert den benötigten BookService
+     * @throws IOException
+     */
     @BeforeEach
 	void setUp() throws IOException {
         service = new BookService(repo);      
     }
-	
+	/**
+     * Testet die Speicherung von Büchern in der Datenbank
+     * @throws BadHttpRequest
+     */
 	@Test
 	void testSaveBook() throws BadHttpRequest {
         when(repo.save(any(BookEntity.class))).thenReturn(entity);
@@ -47,6 +54,10 @@ public class BookServiceTest {
         Mockito.verify(repo, times(1)).existsById(any(Long.class));             
 	}
 
+    /**
+     * Testet das Lesen von Büchern aus der Datenbank
+     * @throws Exception
+     */
     @Test
 	void testReadBook() throws Exception {
         when(repo.findByIsbn13(book.getIsbn13())).thenReturn(Optional.of(entity));

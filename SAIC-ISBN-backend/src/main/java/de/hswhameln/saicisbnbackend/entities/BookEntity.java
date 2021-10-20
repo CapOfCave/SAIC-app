@@ -1,7 +1,9 @@
 package de.hswhameln.saicisbnbackend.entities;
 
 import javax.persistence.*;
-
+/**
+ * Bucheinheit, zum Speichern in der Datenbank
+ */
 @Entity
 @Table(name="T_Book")
 public class BookEntity {

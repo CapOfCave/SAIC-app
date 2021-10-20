@@ -5,11 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClient;
 
 
 import de.hswhameln.saicisbnbackend.controller.BookController;
@@ -26,14 +22,9 @@ import de.hswhameln.saicisbnbackend.dto.DOBook;
 import de.hswhameln.saicisbnbackend.services.BookService;
 import de.hswhameln.saicisbnbackend.services.ValidationService;
 import javassist.tools.web.BadHttpRequest;
-import okhttp3.mockwebserver.MockWebServer;
 
 @ExtendWith(MockitoExtension.class)
 public class BookControllerTest {
-    private static MockWebServer mockBackEnd;
-    
-    @Mock
-    private WebClient webClientMock;
     
     private BookController controller;
     private DOBook testbook;
@@ -43,17 +34,6 @@ public class BookControllerTest {
     @Mock
     private ValidationService validationService;
 
-    @BeforeAll
-    static void setUp() throws IOException{
-        mockBackEnd = new MockWebServer();
-        mockBackEnd.start();
-    }
-
-    @AfterAll
-    static void tearDown() throws IOException {
-        mockBackEnd.shutdown();
-    }
-
     @BeforeEach
     void initialize() {
         testbook = new DOBook("Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", "3551551677");
@@ -61,7 +41,11 @@ public class BookControllerTest {
     }
 
 
-    
+    /**
+     * Testet den Aufruf des Validation Service und den Aufruf des Speicherungs-Service auf Erfolg
+     * 
+     * @throws BadHttpRequest
+     */
     @Test
     void testSaveBookSuccess() throws BadHttpRequest {       
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -72,6 +56,11 @@ public class BookControllerTest {
         Mockito.verify(service, times(1)).saveBook(testbook);
     }
 
+    /**
+     * Testet den Aufruf des Validation Service und den Aufruf des Speicherungs-Service auf Misserfolg
+     * 
+     * @throws BadHttpRequest
+     */
     @Test
     void testSaveBookFailure() throws BadHttpRequest {       
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -86,6 +75,11 @@ public class BookControllerTest {
         Mockito.verify(service, times(1)).saveBook(testbook);
     }
 
+    /**
+     * Testet den Aufruf des Validation Service und den Aufruf des Speicherungs-Service auf Misserfolg, wenn Buch bereits gespeichert ist.
+     * 
+     * @throws BadHttpRequest
+     */
     @Test
     void testSaveBookExists() throws BadHttpRequest {    
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -101,7 +95,10 @@ public class BookControllerTest {
 
     }
 
-
+/**
+ * testet den Aufurf des BookService zum Laden von Büchern
+ * @throws Exception
+ */
     @Test
     void testReadBook() throws Exception {
         when(service.readBook(testbook.getIsbn13())).thenReturn(testbook);

@@ -10,6 +10,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Kontrolliert das Speichern der Buch-Datenhaltungsklassen in der Datenbank
+ */
 @Service
 public class BookService {
     private BookRepository repository;
@@ -19,6 +22,12 @@ public class BookService {
         this.repository = repository;
     }
 
+    /**
+     * speichert Bücher mithilfe des Repositorys
+     * @param book
+     * @return
+     * @throws BadHttpRequest
+     */
     public String saveBook(DOBook book) throws BadHttpRequest {
         if (!repository.existsById(book.getId())) {
             BookEntity savedEntity = repository.save(new BookEntity(book.getTitel(), book.getAutor(), book.getVerlag(),
@@ -31,8 +40,10 @@ public class BookService {
             return "exists";
         }
     }
-
-    public DOBook readBook(String isbn) throws Exception {
+    /**
+     * ließt Bücher mithilfe des Repositorys
+     */
+    public DOBook readBook(String isbn) throws BadHttpRequest {
         Optional<BookEntity> entity = repository.findByIsbn13(isbn);
 
         if (entity.isPresent()) {
@@ -41,6 +52,6 @@ public class BookService {
                     existingEntity.getIsbn13());
 
         }
-        throw new Exception("Could not find book, please check isbn13");
+        throw new BadHttpRequest(new Exception("Could not find book, please check isbn13"));
     }
 }

@@ -1,7 +1,9 @@
 package de.hswhameln.saicisbnbackend.dto;
 
 
-
+/**
+ * Datenhaltungsklasse die ein Buch Repräsentiert
+ */
 public class DOBook {
 
     private long id;
