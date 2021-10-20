@@ -47,8 +47,8 @@ public class BookControllerTest {
      * @throws BadHttpRequest
      */
     @Test
-    void testSaveBookSuccess() throws BadHttpRequest {       
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+    void testSaveBookSuccess() throws Exception {
+        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
         when(service.saveBook(testbook)).thenReturn("success");
 
         controller.saveBook(testbook);
@@ -62,8 +62,8 @@ public class BookControllerTest {
      * @throws BadHttpRequest
      */
     @Test
-    void testSaveBookFailure() throws BadHttpRequest {       
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+    void testSaveBookFailure() throws Exception {
+        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
         when(service.saveBook(testbook)).thenReturn("failure");
 
         try{
@@ -81,8 +81,8 @@ public class BookControllerTest {
      * @throws BadHttpRequest
      */
     @Test
-    void testSaveBookExists() throws BadHttpRequest {    
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+    void testSaveBookExists() throws Exception {
+        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
         when(service.saveBook(testbook)).thenReturn("exists");
 
         try{

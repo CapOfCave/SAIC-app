@@ -35,24 +35,18 @@ public class BookController {
      * @throws BadHttpRequest
      */
     @PostMapping(path = "/saveBook")
-    public void saveBook(@RequestBody DOBook book) {
-        try{
-        ResponseEntity<String> entity = validationService.validate(book.getIsbn13());
-        boolean isValid = entity !=null && entity.getStatusCode().equals(HttpStatus.OK);
-        if (!isValid) {
-            throw new BadHttpRequest(new Exception("ISBN-13 is invalid"));
+    public void saveBook(@RequestBody DOBook book) throws Exception {
+        ValidationService.ValidationResponse entity = validationService.validate(book.getIsbn13());
+        if (!entity.isSuccessful()) {
+            throw new Exception("ISBN-13 is invalid");
         }
         String answer = service.saveBook(book);
         if (answer.equalsIgnoreCase("Exists")) {
-            throw new BadHttpRequest(new Exception("Book already exists"));
+            throw new Exception("Book already exists");
         }
         if (answer.equalsIgnoreCase("failure")) {
-            throw new BadHttpRequest(new Exception("An error occured while saving"));
+            throw new Exception("An error occured while saving");
         }
-    }
-    catch (BadHttpRequest e){
-        System.out.println(e.getMessage());
-    }
     }
     /**
      * Lädt das Buch auf Grundlage der parameterübergebenen isbn
