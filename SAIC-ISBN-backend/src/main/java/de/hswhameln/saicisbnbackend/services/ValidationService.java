@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import reactor.core.publisher.Mono;
 
 @Service
@@ -15,7 +14,11 @@ public class ValidationService {
 
     public ResponseEntity<String> validate(String isbn13) {
         Mono<ResponseEntity<String>> response = client.get()
-                .uri(uriBuilder -> uriBuilder.path("/isbn/validate/{isbn13}").build(isbn13)).retrieve()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/isbn/validate/")
+                        .queryParam("isbn", isbn13)
+                        .build(isbn13)
+                ).retrieve()
                 .toEntity(String.class);
         return response.block();
     }
