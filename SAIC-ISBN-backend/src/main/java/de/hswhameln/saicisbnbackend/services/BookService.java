@@ -4,11 +4,10 @@ import de.hswhameln.saicisbnbackend.dto.DOBook;
 import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.repositories.BookRepository;
 import javassist.tools.web.BadHttpRequest;
-
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Kontrolliert das Speichern der Buch-Datenhaltungsklassen in der Datenbank
@@ -24,22 +23,24 @@ public class BookService {
 
     /**
      * speichert Bücher mithilfe des Repositorys
+     *
      * @param book
      * @return
-     * @throws BadHttpRequest
      */
-    public String saveBook(DOBook book) throws BadHttpRequest {
-        if (!repository.existsById(book.getId())) {
-            BookEntity savedEntity = repository.save(new BookEntity(book.getTitel(), book.getAutor(), book.getVerlag(),
-                    book.getIsbn13().strip().replaceAll("-", "")));
-            if (savedEntity == null) {
-                return "failure";
-            }
-            return "success";
-        } else {
-            return "exists";
+    public void saveBook(DOBook book) throws Exception {
+
+        if (repository.existsById(book.getId())) {
+            throw new IllegalStateException("ISBN already exists");
         }
+        repository.save(
+                new BookEntity(
+                        book.getTitel(),
+                        book.getAutor(),
+                        book.getVerlag(),
+                        book.getIsbn13().strip().replaceAll("-", "")));
+
     }
+
     /**
      * ließt Bücher mithilfe des Repositorys
      */

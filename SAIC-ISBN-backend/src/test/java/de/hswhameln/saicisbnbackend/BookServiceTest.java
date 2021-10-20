@@ -46,7 +46,7 @@ public class BookServiceTest {
      * @throws BadHttpRequest
      */
 	@Test
-	void testSaveBook() throws BadHttpRequest {
+	void testSaveBook() throws Exception {
         when(repo.save(any(BookEntity.class))).thenReturn(entity);
         when(repo.existsById(book.getId())).thenReturn(false);
         service.saveBook(book);

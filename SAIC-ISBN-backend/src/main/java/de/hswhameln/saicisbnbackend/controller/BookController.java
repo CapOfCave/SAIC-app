@@ -32,21 +32,19 @@ public class BookController {
     /**
      * Speichert das parameterübergebene Buch 
      * @param book
-     * @throws BadHttpRequest
      */
     @PostMapping(path = "/saveBook")
-    public void saveBook(@RequestBody DOBook book) throws Exception {
+    public ResponseEntity<String> saveBook(@RequestBody DOBook book) {
         ValidationService.ValidationResponse entity = validationService.validate(book.getIsbn13());
         if (!entity.isSuccessful()) {
-            throw new Exception("ISBN-13 is invalid");
+            return ResponseEntity.badRequest().body("ISBN-13 is invalid: " + entity.getMessage());
         }
-        String answer = service.saveBook(book);
-        if (answer.equalsIgnoreCase("Exists")) {
-            throw new Exception("Book already exists");
+        try {
+            service.saveBook(book);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        if (answer.equalsIgnoreCase("failure")) {
-            throw new Exception("An error occured while saving");
-        }
+        return ResponseEntity.ok("Book saved successfully");
     }
     /**
      * Lädt das Buch auf Grundlage der parameterübergebenen isbn
@@ -55,12 +53,12 @@ public class BookController {
      * @throws Exception
      */
     @PostMapping(path = "/readBook")
-    public DOBook readBook(@RequestBody String isbn)  {
+    public ResponseEntity<DOBook> readBook(@RequestBody String isbn)  {
         try {
-            return service.readBook(isbn);
+            return ResponseEntity.ok(service.readBook(isbn));
         } catch (BadHttpRequest e) {
             System.out.println(e.getMessage());
-            return null;
+            return ResponseEntity.badRequest().build();
         }
     }
 }

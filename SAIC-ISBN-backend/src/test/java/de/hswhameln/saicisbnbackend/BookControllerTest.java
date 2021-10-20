@@ -1,7 +1,11 @@
 package de.hswhameln.saicisbnbackend;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +53,7 @@ public class BookControllerTest {
     @Test
     void testSaveBookSuccess() throws Exception {
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
-        when(service.saveBook(testbook)).thenReturn("success");
+        doNothing().when(service).saveBook(testbook);
 
         controller.saveBook(testbook);
         Mockito.verify(validationService, times(1)).validate(any(String.class));
@@ -64,35 +68,14 @@ public class BookControllerTest {
     @Test
     void testSaveBookFailure() throws Exception {
         when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
-        when(service.saveBook(testbook)).thenReturn("failure");
+        doThrow(new IllegalStateException("message")).when(service).saveBook(testbook);
 
-        try{
-            controller.saveBook(testbook);
-            } catch (Exception e){
-                Assert.assertTrue(true);
-            }
+        ResponseEntity<String> response = controller.saveBook(testbook);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("message", response.getBody());
+
         Mockito.verify(validationService, times(1)).validate(any(String.class));
         Mockito.verify(service, times(1)).saveBook(testbook);
-    }
-
-    /**
-     * Testet den Aufruf des Validation Service und den Aufruf des Speicherungs-Service auf Misserfolg, wenn Buch bereits gespeichert ist.
-     * 
-     * @throws BadHttpRequest
-     */
-    @Test
-    void testSaveBookExists() throws Exception {
-        when(validationService.validate(testbook.getIsbn13())).thenReturn(new ValidationService.ValidationResponse(true, "message"));
-        when(service.saveBook(testbook)).thenReturn("exists");
-
-        try{
-        controller.saveBook(testbook);
-        } catch (Exception e){
-            Assert.assertTrue(true);
-        }
-        Mockito.verify(validationService, times(1)).validate(any(String.class));
-        Mockito.verify(service, times(1)).saveBook(testbook);
-
     }
 
 /**
@@ -102,8 +85,8 @@ public class BookControllerTest {
     @Test
     void testReadBook() throws Exception {
         when(service.readBook(testbook.getIsbn13())).thenReturn(testbook);
-        DOBook book = controller.readBook(testbook.getIsbn13());
-        assertTrue(book.equals(testbook));
+        ResponseEntity<DOBook> response = controller.readBook(testbook.getIsbn13());
+        assertEquals(testbook, response.getBody());
 
     }
 }
