@@ -17,22 +17,22 @@
 
     $bodyGenerateISBN = Invoke-RestMethod -Method GET -Uri "$($generateIsbnUrl)" -StatusCodeVariable "statusGenerateIsbn" -SkipHttpErrorCheck
     if ($statusGenerateIsbn -eq 200){
-        Write-Output "Test Validation $platform`n$time`nPrefix: $randomPrefix`nRegistration Group: $randomRegGroup`nRegistrant: $randomRegistrant`nPublication: $randomPublic`nGenerated ISBN: $bodyGenerateISBN `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
+        Write-Output "Test Validation $platform`n$time`n`nTest ISBN Creation`nPrefix: $randomPrefix`nRegistration Group: $randomRegGroup`nRegistrant: $randomRegistrant`nPublication: $randomPublic`nGenerated ISBN: $bodyGenerateISBN `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
     }
     else {
-        Write-Output "Test Validation $platform`n$time`nPrefix: $prefix`nRegistration Group: $regGroup`nRegistrant: $registrant`nPublication: $publication`nStatuscode: $statusGenerateIsbn`nResponse: $bodyGenerateISBN`n" >> .\Test.log
+        Write-Output "Test Validation $platform`n$time`n`nTest ISBN Creation`nPrefix: $prefix`nRegistration Group: $regGroup`nRegistrant: $registrant`nPublication: $publication`nStatuscode: $statusGenerateIsbn`nResponse: $bodyGenerateISBN`n" >> .\Test.log
     }
 
     $bodyGenerateChecksum = Invoke-RestMethod -Method GET -Uri "$($generateCheckSumUrl)$($randomISBNwochecksum)" -StatusCodeVariable "statusGenerateChecksum" -SkipHttpErrorCheck
     if ($statusGenerateChecksum -eq 200){
-        Write-Output "ISBN without Checksum: $randomISBNwochecksum`nChecksum: $bodyGenerateChecksum `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
+        Write-Output "Test Checksum Validation`nISBN without Checksum: $randomISBNwochecksum`nChecksum: $bodyGenerateChecksum `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
     }
     else {
-        Write-Output "ISBN without Checksum: $randomISBNwochecksum`nResponse: $bodyGenerateChecksum `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
+        Write-Output "Test Checksum Validation`nISBN without Checksum: $randomISBNwochecksum`nResponse: $bodyGenerateChecksum `nStatuscode: $statusGenerateIsbn`n" >> .\Test.log
     }
 
     $bodyValidateIsbn = Invoke-RestMethod -Method GET -Uri "$($validateUrl)$($randomISBN)" -StatusCodeVariable "statusValidateIsbn" -SkipHttpErrorCheck
-    Write-Output "ISBN: $randomISBN`nResponse: $bodyValidateIsbn`nStatuscode: $statusValidateIsbn`n" >> .\Test.log
+    Write-Output "Test ISBN Validation`nISBN: $randomISBN`nResponse: $bodyValidateIsbn`nStatuscode: $statusValidateIsbn`n" >> .\Test.log
 }
 
 function Test-Backend {
@@ -44,7 +44,12 @@ function Test-Backend {
     $titel = "Test"
     $autor = "Test McTesty"
     $verlag = "Test Verlag"
-    $isbn13 = "9781234567897"
+    $isbn13 = "9781234567897" #Get-Random -Minimum 9780000000000 -Maximum 9799999999999
+
+    $titel2 = "Test 2: Electric Boogaloo"
+    $autor2 = "Test McTesty"
+    $verlag2 = "Test Verlag"
+    $isbn132 = "9783125171541" #Get-Random -Minimum 9780000000000 -Maximum 9799999999999
 
     $params = @{
         "titel"="$titel";
@@ -53,20 +58,37 @@ function Test-Backend {
         "isbn13"="$isbn13"
     }
 
+    $params2 = @{
+        "titel"="$titel2";
+        "autor"="$autor2";
+        "verlag"="$verlag2";
+        "isbn13"="$isbn132"
+    }
+
     $savebookURL = "$($baseURL)/saveBook"
     $readbookURL = "$($baseURL)/readBook?isbn="
     $booksURL = "$($baseURL)/books"
 
     $bodySavebook = Invoke-RestMethod -Method POST -Uri "$($savebookURL)" -body ($params|ConvertTo-Json) -ContentType "application/json" -StatusCodeVariable "statusBackendIsbn" -SkipHttpErrorCheck
-    Write-Output "Test Backend $platform`n$time`nTitel: $titel`nAutor: $autor`nVerlag: $verlag`nISBN: $isbn13`nResponse: $bodySavebook`nStatuscode: $statusBackendIsbn`n" >> .\Test.log
+    Write-Output "Test Backend $platform`n$time`n`nTest Book Save`nTitel: $titel`nAutor: $autor`nVerlag: $verlag`nISBN: $isbn13`nResponse: $bodySavebook`nStatuscode: $statusBackendIsbn`n" >> .\Test.log
+
+    $bodySavebook2 = Invoke-RestMethod -Method POST -Uri "$($savebookURL)" -body ($params2|ConvertTo-Json) -ContentType "application/json" -StatusCodeVariable "statusBackendIsbn" -SkipHttpErrorCheck
+    Write-Output "Titel: $titel2`nAutor: $autor2`nVerlag: $verlag2`nISBN: $isbn132`nResponse: $bodySavebook2`nStatuscode: $statusBackendIsbn`n" >> .\Test.log
 
     $bodyReadbook = Invoke-RestMethod -Method GET -Uri "$($readbookURL)$($isbn13)" -StatusCodeVariable "statusGenerateChecksum" -SkipHttpErrorCheck
-    Write-Output "$($bodyReadbook)`n" >> .\Test.log
+    Write-Output "Test Readbook`nID: $($bodyReadbook.id)`nTitel: $($bodyReadbook.titel)`nAutor: $($bodyReadbook.autor)`nVerlag: $($bodyReadbook.verlag)`nISBN: $($bodyReadbook.isbn13)`n" >> .\Test.log
 
-    $bodyBooks = Invoke-RestMethod -Method GET -Uri "$($booksURL)" -StatusCodeVariable "statusGenerateChecksum" -SkipHttpErrorCheck
-    Write-Output "$($bodyBooks)`n" >> .\Test.log
+    $bodyBook = Invoke-RestMethod -Method GET -Uri "$($booksURL)" -StatusCodeVariable "statusGenerateChecksum" -SkipHttpErrorCheck -OutFile .\Test.json -PassThru
+    for ($i = 0; $i -lt $bodyBook.length; $i++) {
+        if ($i -eq 0){
+            Write-Output "Booklist`n" > .\Booklist.log
+        }
+        Write-Output "ID: $($bodyBook[$i].id)`nTitel: $($bodyBook[$i].titel)`nAutor: $($bodyBook[$i].autor)`nVerlag: $($bodyBook[$i].verlag)`nISBN: $($bodyBook[$i].isbn13)`n" >> .\Booklist.log
+    }
 
 }
+
+
 
 $time = Get-Date
 $choice = Read-Host "Test Local [L], Azure [A] or both [B]?"
@@ -85,13 +107,7 @@ switch ($choice){
 
                     $baseUrlValidationLocal = "http://localhost:8081/isbn"
                     Test-Validation -baseURL $baseUrlValidationLocal -platform "Docker"
-
-                    $funcDef = Get-Command Test-Validation -baseURL $baseUrlValidationLocal -platform "Docker"
-
-                    1..100 | ForEach-Object -Parallel {
-                        & $using:funcDef
-                    } -ThrottleLimit 1
-                            
+        
                     exit
                 }
 
@@ -105,7 +121,7 @@ switch ($choice){
                 if ($status_backend -eq "running"){
 
                     $baseUrlBackendLocal = "http://localhost:8080/book"
-                    Test-Backend -baseURL $baseUrlBackendLocal
+                    Test-Backend -baseURL $baseUrlBackendLocal -platform "Docker"
                             
                     exit
                 }
