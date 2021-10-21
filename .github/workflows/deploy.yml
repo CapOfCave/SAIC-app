@@ -8,8 +8,10 @@ on:
 
 jobs:
   deploy-validation-service:
-
     runs-on: ubuntu-latest
+    environment:
+        name: 'production'
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url-validation }}
 
     steps:
     - uses: actions/checkout@v2
@@ -23,11 +25,18 @@ jobs:
       run: mvn -B package --file pom.xml
       working-directory: ./SAIC-ISBN-validation
     - name: Deploy validation service to Azure
-      run: mvn -B azure-webapp:deploy
-      working-directory: ./SAIC-ISBN-validation
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'saic-validation'
+        slot-name: production
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_22d8a7d1b06148569ff405c443bdeaef }}
+        package: '*.jar'
 
   deploy-backend-service:
     runs-on: ubuntu-latest
+    environment:
+        name: 'production'
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url-backend }}
 
     steps:
     - uses: actions/checkout@v2
@@ -39,7 +48,11 @@ jobs:
         cache: maven
     - name: Build backend service with Maven
       run: mvn -B package --file pom.xml
-      working-directory: ./SAIC-ISBN-backend
+      working-directory: ./SAIC-ISBN-validation
     - name: Deploy backend service to Azure
-      run: mvn -B azure-webapp:deploy
-      working-directory: ./SAIC-ISBN-backend
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'saic-backend-service'
+        slot-name: production
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_2015d90caedd498b8281c3156f520913 }}
+        package: '*.jar'
