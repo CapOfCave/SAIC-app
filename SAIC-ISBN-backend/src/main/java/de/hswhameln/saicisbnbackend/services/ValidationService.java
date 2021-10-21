@@ -1,6 +1,7 @@
 package de.hswhameln.saicisbnbackend.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,18 +13,23 @@ import reactor.core.publisher.Mono;
 public class ValidationService {
     @Value("${validationService.baseUrl}")
     private String baseUrl;
-    private final WebClient client = WebClient.create(baseUrl);
+    private final WebClient client = WebClient.create();
 
     public ValidationResponse validate(String isbn13) {
         Mono<ValidationResponse> response = client.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/isbn/validate")
+                        .path(baseUrl + "/isbn/validate")
                         .queryParam("isbn", isbn13)
                         .build()
                 ).exchangeToMono(clientResponse ->
                         clientResponse
                                 .bodyToMono(String.class)
-                                .map(body -> new ValidationResponse(clientResponse.statusCode().is2xxSuccessful(), body)));
+                                .map(body -> {
+                                    if (clientResponse.statusCode() == HttpStatus.NOT_FOUND){
+                                        throw new RuntimeException("Could not reach isbn service: " + clientResponse.statusCode() + " - " + body + " - baseUrl is " + baseUrl);
+                                    }
+                                    return new ValidationResponse(clientResponse.statusCode().is2xxSuccessful(), body);
+                                }));
         return response.block();
     }
 

@@ -41,6 +41,7 @@ public class BookController {
                     bookCreationDto.getVerlag(),
                     bookCreationDto.getIsbn13().strip().replaceAll("-", "")));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok("Book saved successfully");

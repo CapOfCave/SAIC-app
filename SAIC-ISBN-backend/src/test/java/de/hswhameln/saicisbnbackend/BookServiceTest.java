@@ -1,4 +1,5 @@
 package de.hswhameln.saicisbnbackend;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -6,9 +7,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import de.hswhameln.saicisbnbackend.services.ValidationService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,5 +75,13 @@ public class BookServiceTest {
         Mockito.verify(repo, times(1)).findByIsbn13(book.getIsbn13());
 	}
 
+    @Test
+    void testGetBooks() throws Exception {
+        when(repo.findAll()).thenReturn(Collections.singleton(entity));
+        List<BookEntity> actualBooks = service.getBooks();
+
+        assertEquals(1, actualBooks.size());
+
+    }
 	
 }
