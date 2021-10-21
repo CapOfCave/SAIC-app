@@ -45,7 +45,11 @@
         <version>2.2.0</version>
         <configuration>
           <schemaVersion>v2</schemaVersion>
-          <subscriptionId>27ed0681-71a1-4032-8274-1c3001d4990c</subscriptionId>
+          <auth>
+            <type>service_principal</type>
+            <serverId>azure-sp-auth-val</serverId>
+         </auth>
+         <subscriptionId>27ed0681-71a1-4032-8274-1c3001d4990c</subscriptionId>
           <resourceGroup>saic-isbn-service</resourceGroup>
           <appName>saic-validation</appName>
           <pricingTier>F1</pricingTier>

@@ -8,10 +8,8 @@ on:
 
 jobs:
   deploy-validation-service:
+
     runs-on: ubuntu-latest
-    environment:
-        name: 'production'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url-validation }}
 
     steps:
     - uses: actions/checkout@v2
@@ -21,22 +19,27 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-    - name: Build validation service with Maven
-      run: mvn -B package --file pom.xml
-      working-directory: ./SAIC-ISBN-validation
-    - name: Deploy validation service to Azure
-      uses: azure/webapps-deploy@v2
+        
+    - name: Create settings.xml
+      uses: s4u/maven-settings-action@v2.4.1
       with:
-        app-name: 'saic-validation'
-        slot-name: production
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_22d8a7d1b06148569ff405c443bdeaef }}
-        package: '*.jar'
+        servers: |
+          [{
+            "id": "azure-sp-auth-val",
+            "configuration": {
+              "client": "${{ secrets.AZURE_CLIENT_VAL}}",
+              "tenant": "${{ secrets.AZURE_TENANT_VAL}}",
+              "key": "${{ secrets.AZURE_KEY_VAL}}",
+              "environment": "azure"
+            }
+          }]
+    - name: Build validation service with Maven
+      run: mvn -B package --file SAIC-ISBN-validation/pom.xml
+    - name: Deploy validation service to Azure
+      run: mvn -B azure-webapp:deploy
 
   deploy-backend-service:
     runs-on: ubuntu-latest
-    environment:
-        name: 'production'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url-backend }}
 
     steps:
     - uses: actions/checkout@v2
@@ -47,12 +50,6 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build backend service with Maven
-      run: mvn -B package --file pom.xml
-      working-directory: ./SAIC-ISBN-validation
+      run: mvn -B package --file SAIC-ISBN-backend/pom.xml
     - name: Deploy backend service to Azure
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'saic-backend-service'
-        slot-name: production
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_2015d90caedd498b8281c3156f520913 }}
-        package: '*.jar'
+      run: mvn -B azure-webapp:deploy
