@@ -13,4 +13,5 @@ import org.springframework.stereotype.Repository;
 public interface BookRepository extends CrudRepository<BookEntity, Long> {
    
     Optional<BookEntity> findByIsbn13(String isbn);
+    boolean existsByIsbn13(String isbn);
 }

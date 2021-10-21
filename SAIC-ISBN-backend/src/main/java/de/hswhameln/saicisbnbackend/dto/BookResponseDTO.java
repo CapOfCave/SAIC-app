@@ -4,7 +4,7 @@ package de.hswhameln.saicisbnbackend.dto;
 /**
  * Datenhaltungsklasse die ein Buch Repräsentiert
  */
-public class DOBook {
+public class BookResponseDTO {
 
     private long id;
     private String titel;
@@ -12,10 +12,8 @@ public class DOBook {
     private String verlag;
     private String isbn13;
 
-    public DOBook() {
-    }
-
-    public DOBook(String titel, String autor, String verlag, String isbn13){
+    public BookResponseDTO(long id, String titel, String autor, String verlag, String isbn13){
+        this.id = id;
         this.titel=titel;
         this.autor=autor;
         this.verlag=verlag;

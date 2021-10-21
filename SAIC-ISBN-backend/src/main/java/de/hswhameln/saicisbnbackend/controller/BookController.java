@@ -1,18 +1,20 @@
 package de.hswhameln.saicisbnbackend.controller;
 
-import de.hswhameln.saicisbnbackend.dto.DOBook;
+import de.hswhameln.saicisbnbackend.dto.BookCreationDTO;
+import de.hswhameln.saicisbnbackend.dto.BookResponseDTO;
+import de.hswhameln.saicisbnbackend.entities.BookEntity;
 import de.hswhameln.saicisbnbackend.services.BookService;
-import de.hswhameln.saicisbnbackend.services.ValidationService;
-import javassist.tools.web.BadHttpRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -21,52 +23,58 @@ public class BookController {
 
     private BookService service;
 
-    private ValidationService validationService;
 
     @Autowired
-    public BookController(BookService service, ValidationService validationService) {
+    public BookController(BookService service) {
         this.service = service;
-        this.validationService = validationService;
-
     }
+
     /**
-     * Speichert das parameterübergebene Buch 
-     * @param book
-     * @throws BadHttpRequest
+     * Speichert das parameterübergebene Buch
      */
     @PostMapping(path = "/saveBook")
-    public void saveBook(@RequestBody DOBook book) {
-        try{
-        ResponseEntity<String> entity = validationService.validate(book.getIsbn13());
-        boolean isValid = entity !=null && entity.getStatusCode().equals(HttpStatus.OK);
-        if (!isValid) {
-            throw new BadHttpRequest(new Exception("ISBN-13 is invalid"));
+    public ResponseEntity<String> saveBook(@RequestBody BookCreationDTO bookCreationDto) {
+        try {
+            service.saveBook(new BookEntity(
+                    bookCreationDto.getTitel(),
+                    bookCreationDto.getAutor(),
+                    bookCreationDto.getVerlag(),
+                    bookCreationDto.getIsbn13().strip().replaceAll("-", "")));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        String answer = service.saveBook(book);
-        if (answer.equalsIgnoreCase("Exists")) {
-            throw new BadHttpRequest(new Exception("Book already exists"));
-        }
-        if (answer.equalsIgnoreCase("failure")) {
-            throw new BadHttpRequest(new Exception("An error occured while saving"));
-        }
+        return ResponseEntity.ok("Book saved successfully");
     }
-    catch (BadHttpRequest e){
-        System.out.println(e.getMessage());
-    }
-    }
+
     /**
      * Lädt das Buch auf Grundlage der parameterübergebenen isbn
+     *
      * @param isbn
      * @return DOBook
      * @throws Exception
      */
-    @PostMapping(path = "/readBook")
-    public DOBook readBook(@RequestBody String isbn)  {
+    @GetMapping(path = "/readBook")
+    public ResponseEntity<BookResponseDTO> readBook(@RequestParam String isbn) {
         try {
-            return service.readBook(isbn);
-        } catch (BadHttpRequest e) {
-            System.out.println(e.getMessage());
-            return null;
+            BookEntity book = service.readBook(isbn);
+            return ResponseEntity.ok(mapToBookResponse(book));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private BookResponseDTO mapToBookResponse(BookEntity book) {
+        return new BookResponseDTO(book.getId(), book.getTitel(), book.getAutor(), book.getVerlag(),
+                book.getIsbn13());
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<List<BookResponseDTO>> getBooks() {
+        try {
+            List<BookEntity> books = service.getBooks();
+            return ResponseEntity.ok(books.stream().map(this::mapToBookResponse).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
