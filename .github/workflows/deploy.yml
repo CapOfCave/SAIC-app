@@ -21,8 +21,10 @@ jobs:
         cache: maven
     - name: Build validation service with Maven
       run: mvn -B package --file SAIC-ISBN-validation/pom.xml
+      working-directory: ./SAIC-ISBN-validation
     - name: Deploy validation service to Azure
       run: mvn -B azure-webapp:deploy
+      working-directory: ./SAIC-ISBN-validation
 
   deploy-backend-service:
     runs-on: ubuntu-latest
@@ -37,5 +39,7 @@ jobs:
         cache: maven
     - name: Build backend service with Maven
       run: mvn -B package --file SAIC-ISBN-backend/pom.xml
+      working-directory: ./SAIC-ISBN-backend
     - name: Deploy backend service to Azure
       run: mvn -B azure-webapp:deploy
+      working-directory: ./SAIC-ISBN-backend
