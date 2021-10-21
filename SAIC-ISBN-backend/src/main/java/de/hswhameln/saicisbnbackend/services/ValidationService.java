@@ -26,7 +26,7 @@ public class ValidationService {
                                 .bodyToMono(String.class)
                                 .map(body -> {
                                     if (clientResponse.statusCode() == HttpStatus.NOT_FOUND){
-                                        throw new RuntimeException("Could not reach isbn service: " + clientResponse.statusCode() + " - " + body );
+                                        throw new RuntimeException("Could not reach isbn service: " + clientResponse.statusCode() + " - " + body + " - baseUrl is " + baseUrl);
                                     }
                                     return new ValidationResponse(clientResponse.statusCode().is2xxSuccessful(), body);
                                 }));
