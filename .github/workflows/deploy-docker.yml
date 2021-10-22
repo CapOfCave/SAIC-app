@@ -21,6 +21,10 @@ jobs:
         run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
       - name: Push image to docker hub
         run: docker push capofcave/isbn-validation
+      - name: Webhook Azure Web App
+        uses: joelwmale/webhook-action@master
+        with:
+          url: ${{ secrets.AZURE_WEBHOOK_URL_VALIDATION }}
   build-and-publish-backend-service:
     name: Build and publish backend service
     runs-on: ubuntu-latest
@@ -29,7 +33,11 @@ jobs:
       - name: Build the latest Docker image
         run: docker build . --file Dockerfile --tag capofcave/isbn-backend
         working-directory: ./SAIC-ISBN-backend
-      - name: Login to ghcr
+      - name: Login to docker hub
         run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
       - name: Push image to docker hub
         run: docker push capofcave/isbn-backend
+      - name: Webhook Azure Web App
+        uses: joelwmale/webhook-action@master
+        with:
+          url: ${{ secrets.AZURE_WEBHOOK_URL_BACKEND }}
