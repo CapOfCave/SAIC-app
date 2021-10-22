@@ -44,6 +44,6 @@ class IntegrationTest {
     @Disabled
     void integrationTestSave() throws Exception{
         when(validationService.validate(any(String.class))).thenReturn(new ValidationResponse(true, "ISBN is valid."));
-        this.mockMvc.perform(post("/book/saveBook")).bodyqueryParam(@RequestBody BookCreationDTO("Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", "3551551677")).andDo(print()).andExpect(status().isOk());
+        //this.mockMvc.perform(post("/book/saveBook")).bodyqueryParam(@RequestBody BookCreationDTO("Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", "3551551677")).andDo(print()).andExpect(status().isOk());
         }
 }
