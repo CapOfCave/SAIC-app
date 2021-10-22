@@ -1,6 +1,12 @@
 name: Build and publish docker image
 
-on: workflow_dispatch
+on: 
+ workflow_dispatch:
+ workflow_run:
+  workflows: ["Java CI with Maven"]
+  branches: [master]
+  types:
+   - completed
 
 jobs:
   build-and-publish-validation-service:
