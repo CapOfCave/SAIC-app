@@ -41,7 +41,7 @@ class IntegrationTest {
                 "{ \"titel\": \"Harry Potter\", "+
                 "\"autor\": \"J. K. Rowling\", "+
                 "\"verlag\": \"Hamburger Carlsen Verlag\", "+
-                "\"isbn13\": \"3551551677\" }"))
+                "\"isbn13\": \"9783551551672\" }"))
                 .andDo(print()).andExpect(status().isOk());
     }
 }

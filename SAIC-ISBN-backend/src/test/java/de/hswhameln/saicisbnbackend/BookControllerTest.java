@@ -31,7 +31,7 @@ public class BookControllerTest {
     private static final String TITEL = "Harry Potter";
     private static final String AUTOR = "J. K. Rowling";
     private static final String VERLAG = "Hamburger Carlsen Verlag";
-    private static final String ISBN_13 = "3551551677";
+    private static final String ISBN_13 = "9783551551672";
 
     private final BookCreationDTO bookCreationDTO = new BookCreationDTO(TITEL, AUTOR, VERLAG, ISBN_13);
     private final BookEntity bookEntity = new BookEntity(ID, TITEL, AUTOR, VERLAG, ISBN_13);

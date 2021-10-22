@@ -29,7 +29,7 @@ import javassist.tools.web.BadHttpRequest;
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
-    private final String isbn = "3551551677";
+    private final String isbn = "9783551551672";
     private final BookResponseDTO book = new BookResponseDTO(4711L,"Harry Potter", "J. K. Rowling", "Hamburger Carlsen Verlag", isbn);
     private final BookEntity entity = new BookEntity(book.getTitel(),book.getAutor(),book.getVerlag(),book.getIsbn13());
 
