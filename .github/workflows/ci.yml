@@ -23,7 +23,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build validation service with Maven
-      run: mvn -B package --file SAIC-ISBN-validation/pom.xml
+      run: mvn -B test --file SAIC-ISBN-validation/pom.xml
 
   build-backend-service:
 
@@ -38,4 +38,4 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build validation service with Maven
-      run: mvn -B package --file SAIC-ISBN-backend/pom.xml
+      run: mvn -B test --file SAIC-ISBN-backend/pom.xml
