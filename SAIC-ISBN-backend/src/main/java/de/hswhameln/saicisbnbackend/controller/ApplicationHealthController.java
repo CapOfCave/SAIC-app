@@ -26,7 +26,7 @@ public class ApplicationHealthController {
     public ResponseEntity<String> pingValidator() {
         ResponseEntity<String> response = WebClient.create().get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(baseUrl + "/ping")
+                        .path(baseUrl + "/check/ping")
                         .build()
                 ).retrieve()
                 .toEntity(String.class)
