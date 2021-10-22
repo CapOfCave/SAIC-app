@@ -10,5 +10,5 @@ WORKDIR /SaicISBNBackend
 
 COPY --from=MAVEN_BUILD ./build/target/*.jar /SaicISBNBackend/SaicISBNBackend.jar
 
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["java", "-jar", "SaicISBNBackend.jar"]
