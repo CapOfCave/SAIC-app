@@ -1,15 +1,20 @@
 version: "3.8"
 services:
     isbn-validation:
-        image: "isbn-valiation"
+        image: "capofcave/isbn-validation"
         build: "SAIC-ISBN-validation"
         restart: unless-stopped
+        environment:
+        - server.port=8081
         ports:
         - "8081:8081"
     isbn-backend:
-        image: "isbn-backend"
+        image: "capofcave/isbn-backend"
         build: "SAIC-ISBN-backend"
         restart: unless-stopped
+        environment:
+        - server.port=8080
+        - validationService.baseUrl=isbn-validation:8081
         ports:
         - "8080:8080"
         depends_on:
