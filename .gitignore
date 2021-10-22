@@ -2,3 +2,10 @@
 Test.log
 Booklist.log
 Test.json
+Lasttest_Docker_Validation.log
+FunctionTest.log
+StressTestingBackendLocal.log
+StressTestingValidationLocal.log
+FunctionTesting.log
+StressTestingValidationAzure.log
+StressTestingBackendAzure.log
