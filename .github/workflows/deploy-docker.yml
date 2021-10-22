@@ -9,8 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the latest Docker image
-        run: docker build . --file SAIC-ISBN-backend/Dockerfile --tag capofcave/isbn-validation
-        working-directory: ./SAIC-ISBN-validation
+        run: docker build ./SAIC-ISBN-validation --file Dockerfile --tag capofcave/isbn-validation
       - name: Login to docker hub
         run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
       - name: Push image to docker hub
@@ -21,8 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the latest Docker image
-        run: docker build . --file Dockerfile --tag capofcave/isbn-backend
-        working-directory: ./SAIC-ISBN-backend
+        run: docker build ./SAIC-ISBN-backend --file Dockerfile --tag capofcave/isbn-backend
       - name: Login to ghcr
         run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
       - name: Push image to docker hub
