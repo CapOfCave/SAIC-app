@@ -60,6 +60,7 @@ public class BookController {
             BookEntity book = service.readBook(isbn);
             return ResponseEntity.ok(mapToBookResponse(book));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
