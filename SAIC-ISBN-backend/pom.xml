@@ -87,10 +87,6 @@
         <version>2.2.0</version>
         <configuration>
           <schemaVersion>v2</schemaVersion>
-          <auth>
-            <type>service_principal</type>
-            <serverId>azure-sp-auth-val</serverId>
-         </auth>
           <subscriptionId>27ed0681-71a1-4032-8274-1c3001d4990c</subscriptionId>
           <resourceGroup>saic-isbn-service</resourceGroup>
           <appName>saic-isbn-backend</appName>

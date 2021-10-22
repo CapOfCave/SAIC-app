@@ -1,0 +1,29 @@
+name: Build and publish docker image
+
+on: workflow_dispatch
+
+jobs:
+  build-and-publish-validation-service:
+    name: Build and publish validation service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the latest Docker image
+        run: docker build . --file Dockerfile --tag capofcave/isbn-validation
+        working-directory: ./SAIC-ISBN-validation
+      - name: Login to docker hub
+        run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
+      - name: Push image to docker hub
+        run: docker push capofcave/isbn-validation
+  build-and-publish-backend-service:
+    name: Build and publish backend service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the latest Docker image
+        run: docker build . --file Dockerfile --tag capofcave/isbn-backend
+        working-directory: ./SAIC-ISBN-backend
+      - name: Login to ghcr
+        run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u capofcave --password-stdin
+      - name: Push image to docker hub
+        run: docker push capofcave/isbn-backend
