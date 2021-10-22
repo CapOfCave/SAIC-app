@@ -52,4 +52,12 @@ class IntegrationTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @Sql(statements = {"INSERT INTO T_Book (ID, TITEL, AUTOR, VERLAG, ISBN13) VALUES (4711, 'titel', 'author', 'verlag', '9783551551672')","INSERT INTO T_Book (ID, TITEL, AUTOR, VERLAG, ISBN13) VALUES (4811, 'titel2', 'author2', 'verlag2', '9783608938289')"})
+    void integrationTestLoadAllBooks() throws Exception {
+        when(validationService.validate(any(String.class))).thenReturn(new ValidationResponse(true, "ISBN is valid."));
+        this.mockMvc.perform(get("/book/books")).andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
