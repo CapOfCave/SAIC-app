@@ -12,7 +12,7 @@
 ---
 
 ## Getting started
-There are several different ways to run the services.
+There are several different ways to run the services. On a running service, swagger can be accessed on `/api.html`
 
 ### Using the deployed instance from Azure
 The services are available under the following URLs:
